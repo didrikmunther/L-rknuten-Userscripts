@@ -11,8 +11,6 @@
 
 /*jshint sub:true*/																			// Ignore W069 warning
 
-document.getElementsByTagName('body')[0].setAttribute('style', 'display:none;');
-
 var loopInterval = 1000*1;																	// Set the loop interval
 var oldLessons = 3;																			// Set the flag for coloring old lessons
 																							// Flag: 0=normal, 1=45dStriped, 2=180dStriped, 3=darken
