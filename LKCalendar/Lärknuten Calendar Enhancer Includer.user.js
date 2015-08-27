@@ -10,6 +10,6 @@
 // ==/UserScript==
 
 var elem = document.createElement('script');
-elem.setAttribute('src', 'https://cdn.rawgit.com/Malaxiz/L-rknuten-Userscripts/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js');
+elem.setAttribute('src', 'https://rawgit.com/Malaxiz/L-rknuten-Userscripts/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js');
 elem.setAttribute('type', 'text/javascript');
 document.getElementsByTagName('body')[0].appendChild(elem);
