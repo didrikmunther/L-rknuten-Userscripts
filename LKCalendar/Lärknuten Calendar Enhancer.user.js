@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      2.1
+// @version      2.2
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
 // @author       Didrik Munther KTC-TE14
@@ -14,7 +14,7 @@
 var loopInterval = 1000*1;																	// Set the loop interval
 var oldLessons = 3;																			// Set the flag for coloring old lessons
 																							// Flag: 0=normal, 1=45dStriped, 2=180dStriped, 3=darken
-var minuteAlarm = [5, 2, 1];
+var minuteAlarm = [5, 3, 1];
 
 var lessonColors = {}; 																	    // Set all the lessons' colors
 lessonColors["DEFAULT"] = 	"White";
