@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      2.0
+// @version      2.1
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
-// @author       Didrik Munther
+// @author       Didrik Munther KTC-TE14
 // @match        https://katrineholm.pingpong.se/*
 // @grant        none
 // ==/UserScript==
@@ -71,14 +71,23 @@ function colorLessons(lesson, flag, percent) {
             styleAttrib = "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
             break;
         case(LESSONTYPES.ACTIVE_LESSON):
-            styleAttrib = "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);"
+            styleAttrib = "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);position:relative;padding:8px;"
+            if(lesson.getElementsByClassName("active-lesson-border").length === 0) {
+                var borderElem = document.createElement("div");
+                borderElem.setAttribute("class", "active-lesson-border");
+                borderElem.setAttribute("style", "border:5px groove green;position:absolute;left:0;top:0;bottom:0;width:100%;box-sizing:border-box;");
+                lesson.appendChild(borderElem);
+            }
             break;
         case(LESSONTYPES.OLD_LESSON):
             styleAttrib = "background-color:" + lessonColors["OLDLESSON"] + ";";
+            if(lesson.getElementsByClassName("active-lesson-border").length > 0) {
+                lesson.getElementsByClassName("active-lesson-border")[0].innerHTML = "";
+            }
             break;
     }
     
-    lesson.setAttribute("style",styleAttrib);											// Set the attribute to the lesson box.
+    lesson.setAttribute("style", styleAttrib);											// Set the attribute to the lesson box.
 }
 
 function updateLoop() {																    // Main Loop
@@ -120,30 +129,26 @@ function updateLoop() {																    // Main Loop
         var diff = lectionDate2 - lectionDate1; 										// Get lesson's duration
         var diffTime = getTime(diff);
 
-        colorLessons(calObjects[i], LESSONTYPES.NORMAL_LESSON, 0); 		// Color all the different lessons
+        colorLessons(calObjects[i], LESSONTYPES.NORMAL_LESSON, 0); 		                // Color all the different lessons
 
         var lectionActive = "";
         if(today > lectionDate2) { 														// #### If lesson is past current date
-            colorLessons(calObjects[i], LESSONTYPES.OLD_LESSON, 0);		// Manage old lessons
+            colorLessons(calObjects[i], LESSONTYPES.OLD_LESSON, 0);		                // Manage old lessons
         }
         else if(today > lectionDate1 && today < lectionDate2) { 						// #### If current date is colliding with lesson's date, then the lesson is active
             var timeLeft = lectionDate2 - today; 										// Get the time left of lesson
             timeLeftTime = getTime(timeLeft); 											// Convert time left of lesson to hours, minutes and seconds
             lectionActive += "<b>" + timeLeftTime[0] + "h, " + timeLeftTime[1] + "m " + timeLeftTime[2] + "s kvar </b>"; // Display time left of lesson
             colorLessons(calObjects[i], LESSONTYPES.ACTIVE_LESSON, 100 - ((today - lectionDate1) / (lectionDate2 - lectionDate1) * 100));	// Color the active lesson
-            console.log("today: " + (today - lectionDate1));
-            console.log("lectionDate2: " + (lectionDate2 - lectionDate1));
         }
         else {																			// #### Else the lesson is coming up
             var timeLeft = today - lectionDate2;
             timeLeftTime = getTime(-timeLeft - diff);									// Time until lesson starts
             timeUntilEnd = getTime(-timeLeft);											// Time until lesson ends
             if(timeLeftTime[0] === 0 &&
-               //(timeLeftTime[1] <= minuteAlarm) &&
                (minuteAlarm.indexOf(timeLeftTime[1] + 1)) >= 0 &&
                (calObjects[i].getElementsByClassName("isAlerted")[0].id) !== "alerted" + timeLeftTime[1]) {
                 alert(timeLeftTime[1] + 1 + " Minute Varning");
-                console.log("Warned");
                 calObjects[i].getElementsByClassName("isAlerted")[0].id = "alerted" + timeLeftTime[1];
             }
             lectionActive += "<font size=\"1\"><i> Om " + timeLeftTime[0] + "h, " + timeLeftTime[1] + "m " + timeLeftTime[2] + "s <span style=\"opacity: 0.5\">- " + timeUntilEnd[0] + "h, " + timeUntilEnd[1] + "m " + timeUntilEnd[2] + "s </span></i></font>"; // Display the time until lesson start
