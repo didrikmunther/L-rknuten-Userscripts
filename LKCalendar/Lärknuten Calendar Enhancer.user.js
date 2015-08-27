@@ -72,18 +72,18 @@ function colorLessons(lesson, flag, percent) {
             break;
         case(LESSONTYPES.ACTIVE_LESSON):
             styleAttrib = "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);position:relative;padding:8px;"
-            if(lesson.getElementsByClassName("active-lesson-border").length === 0) {
-                var borderElem = document.createElement("div");
-                borderElem.setAttribute("class", "active-lesson-border");
-                borderElem.setAttribute("style", "border:5px groove green;position:absolute;left:0;top:0;bottom:0;width:100%;box-sizing:border-box;");
-                lesson.appendChild(borderElem);
-            }
+            // if(lesson.getElementsByClassName("active-lesson-border").length === 0) {
+            //     var borderElem = document.createElement("div");
+            //     borderElem.setAttribute("class", "active-lesson-border");
+            //     borderElem.setAttribute("style", "border:5px groove green;position:absolute;left:0;top:0;bottom:0;width:100%;box-sizing:border-box;");
+            //     lesson.appendChild(borderElem);
+            // }
             break;
         case(LESSONTYPES.OLD_LESSON):
             styleAttrib = "background-color:" + lessonColors["OLDLESSON"] + ";";
-            if(lesson.getElementsByClassName("active-lesson-border").length > 0) {
-                lesson.getElementsByClassName("active-lesson-border")[0].innerHTML = "";
-            }
+            // if(lesson.getElementsByClassName("active-lesson-border").length > 0) {
+            //     lesson.getElementsByClassName("active-lesson-border")[0].innerHTML = "";
+            // }
             break;
     }
     
