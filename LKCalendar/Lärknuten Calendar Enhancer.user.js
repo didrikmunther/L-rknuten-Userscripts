@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      2.4
+// @version      2.6
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -13,9 +13,8 @@
 /*jshint sub:true*/																			// Ignore W069 warning
 
 var loopInterval = 1000*1;																	// Set the loop interval
-var oldLessons = 3;																			// Set the flag for coloring old lessons
-																							// Flag: 0=normal, 1=45dStriped, 2=180dStriped, 3=darken
-var minuteAlarm = [5, 3, 1];
+
+var minuteAlarm = [5, 2, 1];
 
 var lessonColors = {}; 																	    // Set all the lessons' colors
 lessonColors["DEFAULT"] = 	"White";
@@ -25,16 +24,13 @@ lessonColors["KEM"] = 		'yellow';
 lessonColors["ENG"] = 		'lightblue';
 lessonColors["Men"] = 		'red';
 lessonColors["IDH"] = 		'lightgreen';
-lessonColors["SAM"] = 		'#9E9E9E';
 lessonColors["SVE"] = 		'pink';
-lessonColors["TEK"] = 		'White';
 lessonColors["DEU"] = 		'Lavender';
 lessonColors["FYS"] = 		'SlateGray';
-lessonColors["Fri"] = 		'#82A1AB';
+//lessonColors["PRR"] =       'yellow';
 lessonColors["PRR"] =       'url(http://animalia-life.com/data_images/goat/goat4.jpg)';
 
-var additionalStylesWhenActive = {};
-additionalStylesWhenActive["PRR"] = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;'
+var styleWhenImage = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;'
 
 var LESSONTYPES = {
     NORMAL_LESSON : 0,
@@ -75,11 +71,9 @@ function colorLessons(lesson, flag, percent) {
         case(LESSONTYPES.NORMAL_LESSON):
             if(lessonColors[lessonType].substr(0, 4) === "url(") {
                 styleAttrib += "background-image:" + lessonColors[lessonType] + ";cursor:pointer;";
+                styleAttrib += styleWhenImage;
             } else {
                 styleAttrib += "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
-            }
-            if(additionalStylesWhenActive[lessonType] !== undefined) {
-                styleAttrib += additionalStylesWhenActive[lessonType];
             }
             break;
         case(LESSONTYPES.ACTIVE_LESSON):
