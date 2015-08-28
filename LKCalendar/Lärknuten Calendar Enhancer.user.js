@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      2.2
+// @version      2.3
+// @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
 // @author       Didrik Munther KTC-TE14
@@ -30,7 +31,10 @@ lessonColors["TEK"] = 		'White';
 lessonColors["DEU"] = 		'Lavender';
 lessonColors["FYS"] = 		'SlateGray';
 lessonColors["Fri"] = 		'#82A1AB';
-lessonColors["PRR"] =       'yellow';
+lessonColors["PRR"] =       'url(http://naibuzz.com/wp-content/uploads/2015/04/programming.jpg)';
+
+var additionalStyles = {};
+additionalStyles["PRR"] = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;'
 
 var LESSONTYPES = {
     NORMAL_LESSON : 0,
@@ -66,28 +70,29 @@ function colorLessons(lesson, flag, percent) {
     }
     
     var styleAttrib = "";
+    
+    if(additionalStyles[lessonType] !== undefined) {
+        styleAttrib += additionalStyles[lessonType];
+    }
+    
     switch(flag) {
         case(LESSONTYPES.NORMAL_LESSON):
-            styleAttrib = "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
+            if(lessonColors[lessonType].substr(0, 4) === "url(") {
+                styleAttrib += "background-image:" + lessonColors[lessonType] + ";cursor:pointer;";
+            } else {
+                styleAttrib += "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
+            }
             break;
         case(LESSONTYPES.ACTIVE_LESSON):
-            styleAttrib = "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);position:relative;padding:8px;"
-            // if(lesson.getElementsByClassName("active-lesson-border").length === 0) {
-            //     var borderElem = document.createElement("div");
-            //     borderElem.setAttribute("class", "active-lesson-border");
-            //     borderElem.setAttribute("style", "border:5px groove green;position:absolute;left:0;top:0;bottom:0;width:100%;box-sizing:border-box;");
-            //     lesson.appendChild(borderElem);
-            // }
+            styleAttrib += "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);position:relative;padding:8px;"
             break;
         case(LESSONTYPES.OLD_LESSON):
-            styleAttrib = "background-color:" + lessonColors["OLDLESSON"] + ";";
-            // if(lesson.getElementsByClassName("active-lesson-border").length > 0) {
-            //     lesson.getElementsByClassName("active-lesson-border")[0].innerHTML = "";
-            // }
+            styleAttrib += "background-color:" + lessonColors["OLDLESSON"] + ";";
             break;
     }
     
-    lesson.setAttribute("style", styleAttrib);											// Set the attribute to the lesson box.
+    lesson.setAttribute("style", styleAttrib);	// Set the attribute to the lesson box.
+    
 }
 
 function updateLoop() {																    // Main Loop
