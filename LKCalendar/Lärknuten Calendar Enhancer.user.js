@@ -31,10 +31,10 @@ lessonColors["TEK"] = 		'White';
 lessonColors["DEU"] = 		'Lavender';
 lessonColors["FYS"] = 		'SlateGray';
 lessonColors["Fri"] = 		'#82A1AB';
-lessonColors["PRR"] =       'url(http://naibuzz.com/wp-content/uploads/2015/04/programming.jpg)';
+lessonColors["PRR"] =       'url(http://animalia-life.com/data_images/goat/goat4.jpg)';
 
-var additionalStyles = {};
-additionalStyles["PRR"] = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;'
+var additionalStylesWhenActive = {};
+additionalStylesWhenActive["PRR"] = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;'
 
 var LESSONTYPES = {
     NORMAL_LESSON : 0,
@@ -71,16 +71,15 @@ function colorLessons(lesson, flag, percent) {
     
     var styleAttrib = "";
     
-    if(additionalStyles[lessonType] !== undefined) {
-        styleAttrib += additionalStyles[lessonType];
-    }
-    
     switch(flag) {
         case(LESSONTYPES.NORMAL_LESSON):
             if(lessonColors[lessonType].substr(0, 4) === "url(") {
                 styleAttrib += "background-image:" + lessonColors[lessonType] + ";cursor:pointer;";
             } else {
                 styleAttrib += "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
+            }
+            if(additionalStylesWhenActive[lessonType] !== undefined) {
+                styleAttrib += additionalStylesWhenActive[lessonType];
             }
             break;
         case(LESSONTYPES.ACTIVE_LESSON):
