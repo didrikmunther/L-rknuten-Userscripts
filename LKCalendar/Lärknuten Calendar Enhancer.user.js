@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.1
+// @version      3.2
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -75,7 +75,7 @@ function saveLessonSettings(lessonSettings) {
 function loadGlobalSettings(settingsElem) {
     if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
         var settings = document.createElement('div');
-        settings.setAttribute('style', 'background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        settings.setAttribute('style', 'z-index:1;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
         settings.setAttribute('class', 'lesson-setting');
         settings.innerHTML = '<u><h3 style="margin:0;">Global settings for Lärknuten Calendar Enhancer</h3></u><br>';
         
@@ -115,7 +115,7 @@ function loadGlobalSettings(settingsElem) {
         aboutButton.innerHTML = 'About this script';
         aboutButton.onclick = function() {
             var aboutPage = document.createElement('div');
-            aboutPage.setAttribute('style', 'text-align:center;border:1px solid #aaa;padding:1em;position:fixed;top:25%;left:0;right:0;margin:5% auto;background-color:#dcdcdc;');
+            aboutPage.setAttribute('style', 'z-index:1;text-align:center;border:1px solid #aaa;padding:1em;position:fixed;top:25%;left:0;right:0;margin:5% auto;background-color:#dcdcdc;');
             aboutPage.innerHTML = '<u><h3>About Lärknuten Calendar Enhancer</h3></u> <br> <h4>Created by: Didrik Munther<br>Script page: <a href="https://github.com/Malaxiz/L-rknuten-Userscripts" target="_blank">https://github.com/Malaxiz/L-rknuten-Userscripts</a></h4>';
             aboutPage.onclick = function() {
                 this.remove();
@@ -141,7 +141,7 @@ function loadLessonSettings(settingsElem) {
     if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
         var lessonName = settingsElem.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
         var lessonSettings = document.createElement('div');
-        lessonSettings.setAttribute('style', 'background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        lessonSettings.setAttribute('style', 'z-index:1;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
         lessonSettings.setAttribute('class', 'lesson-setting');
 
         lessonSettings.innerHTML = '<u><h3 style="margin:0;">Settings for ' + lessonName + '</h3></u><br>';
@@ -214,12 +214,12 @@ function init() {
         var lesson = calObjects[i];
         
         var tempElem = document.createElement('div');
-        tempElem.setAttribute('style', 'opacity:0.1;width:30px;height:30px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
+        tempElem.setAttribute('style', 'opacity:0.2;width:30px;height:30px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
         tempElem.onmouseover = function() {
             this.style.opacity = 1.0;
         }
         tempElem.onmouseout = function() {
-            this.style.opacity = 0.1;
+            this.style.opacity = 0.2;
         }
         tempElem.onclick = function() {
             loadLessonSettings(this);
