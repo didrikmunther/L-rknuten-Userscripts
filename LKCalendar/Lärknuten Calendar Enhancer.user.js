@@ -90,7 +90,7 @@ function loadGlobalSettings(settingsElem) {
         loadBackupButton.innerHTML = 'Load backup settings';
         loadBackupButton.onclick = function() {
             var backup = prompt('Put the backed up string in the box below.');
-            if(IsJsonString(backup)) {
+            if(IsJsonString(backup) && backup != null) {
                 cfg = JSON.parse(backup);
                 GM_setValue(cfgSavePath, JSON.stringify(cfg));
             } else {
@@ -106,14 +106,27 @@ function loadGlobalSettings(settingsElem) {
             if(confirm('Are you really, really, really sure?')) {
                 cfg = JSON.parse('{}');
                 GM_setValue(cfgSavePath, JSON.stringify(cfg));
+                location.reload();
             }
         }
         settings.appendChild(clearCacheButton);
         
+        var aboutButton = document.createElement('button');
+        aboutButton.innerHTML = 'About this script';
+        aboutButton.onclick = function() {
+            var aboutPage = document.createElement('div');
+            aboutPage.setAttribute('style', 'text-align:center;border:1px solid #aaa;padding:1em;position:fixed;top:25%;left:0;right:0;margin:5% auto;background-color:#dcdcdc;');
+            aboutPage.innerHTML = '<u><h3>About Lärknuten Calendar Enhancer</h3></u> <br> <h4>Created by: Didrik Munther<br>Script page: <a href="https://github.com/Malaxiz/L-rknuten-Userscripts" target="_blank">https://github.com/Malaxiz/L-rknuten-Userscripts</a></h4>';
+            aboutPage.onclick = function() {
+                this.remove();
+            }
+            settings.appendChild(aboutPage);
+        }
+        settings.appendChild(aboutButton);
         
         var saveButton = document.createElement('button');
-        saveButton.setAttribute('style', 'float:right;');
         saveButton.innerHTML = 'Close';
+        saveButton.setAttribute('style', 'float:right;clear:both;margin-top:20px;');
         saveButton.onclick = function() {
             
             this.parentElement.remove();
