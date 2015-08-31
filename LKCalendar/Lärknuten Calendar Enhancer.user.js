@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2
+// @version      3.2.1
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -75,7 +75,7 @@ function saveLessonSettings(lessonSettings) {
 function loadGlobalSettings(settingsElem) {
     if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
         var settings = document.createElement('div');
-        settings.setAttribute('style', 'z-index:1;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        settings.setAttribute('style', 'z-index:2;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
         settings.setAttribute('class', 'lesson-setting');
         settings.innerHTML = '<u><h3 style="margin:0;">Global settings for Lärknuten Calendar Enhancer</h3></u><br>';
         
@@ -115,7 +115,7 @@ function loadGlobalSettings(settingsElem) {
         aboutButton.innerHTML = 'About this script';
         aboutButton.onclick = function() {
             var aboutPage = document.createElement('div');
-            aboutPage.setAttribute('style', 'z-index:1;text-align:center;border:1px solid #aaa;padding:1em;position:fixed;top:25%;left:0;right:0;margin:5% auto;background-color:#dcdcdc;');
+            aboutPage.setAttribute('style', 'text-align:center;border:1px solid #aaa;padding:1em;position:fixed;top:25%;left:0;right:0;margin:5% auto;background-color:#dcdcdc;');
             aboutPage.innerHTML = '<u><h3>About Lärknuten Calendar Enhancer</h3></u> <br> <h4>Created by: Didrik Munther<br>Script page: <a href="https://github.com/Malaxiz/L-rknuten-Userscripts" target="_blank">https://github.com/Malaxiz/L-rknuten-Userscripts</a></h4>';
             aboutPage.onclick = function() {
                 this.remove();
