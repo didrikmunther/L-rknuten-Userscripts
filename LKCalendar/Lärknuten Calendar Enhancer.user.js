@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      2.6
+// @version      3.0
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
 // @author       Didrik Munther KTC-TE14
 // @match        https://katrineholm.pingpong.se/*
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
 /*jshint sub:true*/																			// Ignore W069 warning
@@ -19,16 +20,6 @@ var minuteAlarm = [5, 2, 1];
 var lessonColors = {}; 																	    // Set all the lessons' colors
 lessonColors["DEFAULT"] = 	"White";
 lessonColors["OLDLESSON"] = "lightgray";
-lessonColors["MAT"] = 		'orange';
-lessonColors["KEM"] = 		'yellow';
-lessonColors["ENG"] = 		'lightblue';
-lessonColors["Men"] = 		'red';
-lessonColors["IDH"] = 		'lightgreen';
-lessonColors["SVE"] = 		'pink';
-lessonColors["DEU"] = 		'Lavender';
-lessonColors["FYS"] = 		'SlateGray';
-//lessonColors["PRR"] =       'yellow';
-lessonColors["PRR"] =       'url(http://animalia-life.com/data_images/goat/goat4.jpg)';
 
 var styleWhenImage = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;'
 
@@ -38,8 +29,212 @@ var LESSONTYPES = {
     OLD_LESSON : 2
 }
 
+var cfg = JSON.parse('{}');
+var cfgSavePath = 'lce-gmSave';
+
+init();
 updateLoop();
 var interval = setInterval(updateLoop, loopInterval); // Run script at an interval at loopinterval/1000 seconds
+
+
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+function updateCfg() {
+    cfg = JSON.parse(GM_getValue(cfgSavePath));
+}
+
+function saveLessonSettings(lessonSettings) {
+    var lessonName = lessonSettings.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
+    var settings = JSON.parse('{}');
+
+    settings.background = JSON.parse('{}');
+    settings.background.backgroundData = lessonSettings.getElementsByClassName('backgroundData')[0].value;
+    settings.background.imageToggle = lessonSettings.getElementsByClassName('imageToggle')[0].checked == true ? 1 : 0;
+    settings.font = JSON.parse('{}');
+    settings.font.fontColor = lessonSettings.getElementsByClassName('fontColor')[0].value;
+    
+    var gsettingsString = GM_getValue(cfgSavePath);
+    if(gsettingsString === undefined || gsettingsString === '') {
+        gsettingsString = '{}';
+    }
+    var gsettings = JSON.parse(gsettingsString);
+    gsettings[lessonName] = settings;
+    GM_setValue(cfgSavePath, JSON.stringify(gsettings));
+    
+    updateCfg();
+    
+}
+
+function loadGlobalSettings(settingsElem) {
+    if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
+        var settings = document.createElement('div');
+        settings.setAttribute('style', 'background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        settings.setAttribute('class', 'lesson-setting');
+        settings.innerHTML = '<u><h3 style="margin:0;">Global settings for Lärknuten Calendar Enhancer</h3></u><br>';
+        
+        var backupButton = document.createElement('button');
+        backupButton.innerHTML = 'Backup settings';
+        backupButton.onclick = function() {
+            alert(JSON.stringify(cfg));
+        }
+        settings.appendChild(backupButton);
+        
+        var loadBackupButton = document.createElement('button');
+        loadBackupButton.innerHTML = 'Load backup settings';
+        loadBackupButton.onclick = function() {
+            var backup = prompt('Put the backed up string in the box below.');
+            if(IsJsonString(backup)) {
+                cfg = JSON.parse(backup);
+                GM_setValue(cfgSavePath, JSON.stringify(cfg));
+            } else {
+                alert('Not a valid json string!');
+            }
+        }
+        settings.appendChild(loadBackupButton);
+        
+        var clearCacheButton = document.createElement('button');
+        clearCacheButton.setAttribute('style', 'color:red;');
+        clearCacheButton.innerHTML = 'Clear settings';
+        clearCacheButton.onclick = function() {
+            if(confirm('Are you really, really, really sure?')) {
+                cfg = JSON.parse('{}');
+                GM_setValue(cfgSavePath, JSON.stringify(cfg));
+            }
+        }
+        settings.appendChild(clearCacheButton);
+        
+        
+        var saveButton = document.createElement('button');
+        saveButton.setAttribute('style', 'float:right;');
+        saveButton.innerHTML = 'Close';
+        saveButton.onclick = function() {
+            
+            this.parentElement.remove();
+        }
+        settings.appendChild(saveButton);
+        
+        settingsElem.parentElement.insertBefore(settings, settingsElem.parentElement.childNodes[1]);
+    }
+}
+
+function loadLessonSettings(settingsElem) {
+    if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
+        var lessonName = settingsElem.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
+        var lessonSettings = document.createElement('div');
+        lessonSettings.setAttribute('style', 'background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        lessonSettings.setAttribute('class', 'lesson-setting');
+
+        lessonSettings.innerHTML = '<u><h3 style="margin:0;">Settings for ' + lessonName + '</h3></u><br>';
+
+        var settingsString = GM_getValue(cfgSavePath);
+        if(settingsString === undefined || settingsString === '') {
+            var settingsString = '{}';
+        }
+        var gsettings = JSON.parse(settingsString);
+        var settings = gsettings[lessonName];
+        if(settings === undefined) {
+            settings = JSON.parse('{}');
+        }
+
+        if(settings.background === undefined) {
+            settings.background = JSON.parse('{"imageToggle": 0, "backgroundData": "white"}');
+        }
+        
+        var backgroundData = document.createElement('input');
+        backgroundData.setAttribute('class', 'backgroundData');
+        backgroundData.setAttribute('style', 'width:100px;height:20px;');
+        backgroundData.setAttribute('value', JSON.stringify(settings.background.backgroundData).substring(1).slice(0, -1));
+        var imageToggle = document.createElement('input');
+        imageToggle.setAttribute('class', 'imageToggle');
+        imageToggle.setAttribute('type', 'checkbox');
+        if(JSON.stringify(settings.background.imageToggle) == 1) {
+            imageToggle.setAttribute('checked', true);
+        }
+        lessonSettings.innerHTML += 'Background: ';
+        lessonSettings.appendChild(backgroundData);
+        lessonSettings.innerHTML += ' Is image: ';
+        lessonSettings.appendChild(imageToggle);
+        lessonSettings.innerHTML += '<br>';
+        
+        if(settings.font === undefined) {
+            settings.font = JSON.parse('{"fontColor":"black"}');
+        }
+        var fontColor = document.createElement('input');
+        fontColor.setAttribute('class', 'fontColor');
+        fontColor.setAttribute('style', 'width:100px;height:20px;');
+        fontColor.setAttribute('value', JSON.stringify(settings.font.fontColor).substring(1).slice(0, -1));
+        lessonSettings.innerHTML += 'Font-color: ';
+        lessonSettings.appendChild(fontColor);
+        lessonSettings.innerHTML += '<br>';
+        
+        
+        
+        var saveButton = document.createElement('button');
+        saveButton.innerHTML = 'Save';
+        saveButton.setAttribute('style', 'float:right;');
+        saveButton.setAttribute('class', 'save-button');
+        saveButton.onclick = function() {
+            saveLessonSettings(lessonSettings);
+            this.parentElement.remove();
+        }
+        lessonSettings.appendChild(saveButton);
+
+        settingsElem.parentElement.insertBefore(lessonSettings, settingsElem.parentElement.childNodes[1]);
+    }
+}
+
+function init() {
+    
+    cfg = JSON.parse(GM_getValue(cfgSavePath));
+    
+    var calObjects = document.querySelectorAll('.cal-day-item, .cal-day-item-inside');
+    
+    for(var i = 0; i < calObjects.length; i++) {
+        
+        var lesson = calObjects[i];
+        
+        var tempElem = document.createElement('div');
+        tempElem.setAttribute('style', 'opacity:0.1;width:30px;height:30px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
+        tempElem.onmouseover = function() {
+            this.style.opacity = 1.0;
+        }
+        tempElem.onmouseout = function() {
+            this.style.opacity = 0.1;
+        }
+        tempElem.onclick = function() {
+            loadLessonSettings(this);
+        }
+        
+        lesson.onclick = undefined;
+        lesson.style.cursor = 'none';
+        lesson.insertBefore(tempElem, lesson.firstChild);
+        
+        tempElem.click();
+        lesson.getElementsByClassName('lesson-setting')[0].getElementsByClassName('save-button')[0].click();
+        
+    }
+    
+    var th = document.getElementsByClassName('table-view')[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[0];
+    var settingsElem = document.createElement('div');
+    settingsElem.setAttribute('style', 'opacity:0.3;width:38px;height:38px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
+    settingsElem.onmouseover = function() {
+        this.style.opacity = 1.0;
+    }
+    settingsElem.onmouseout = function() {
+        this.style.opacity = 0.3;
+    }
+    settingsElem.onclick = function() {
+        loadGlobalSettings(this);
+    }
+    th.appendChild(settingsElem);
+}
 
 function getTime(msec) {
     var h = Math.floor(msec / 1000 / 60 / 60);
@@ -60,22 +255,28 @@ function getDate(year, month, day, hour, minute) {
 }
 
 function colorLessons(lesson, flag, percent) {
-    lessonType = lesson.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3); // Get lesson type. E.g Math = MAT, Fysik = FYS
-    if(!(lessonType in lessonColors)) {														// Check if lesson type is a key in lessonColors,
-    	lessonType = "DEFAULT";																// otherwise asign it the default color white.
+    var lessonName = lesson.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3); // Get lesson type. E.g Math = MAT, Fysik = FYS
+    
+    var lessonCfg = cfg[lessonName];
+    if(lessonCfg === undefined) {
+        return;
     }
     
     var styleAttrib = "";
     
+    // Remember this one: .substring(1).slice(0, -1)
+    
     switch(flag) {
         case(LESSONTYPES.NORMAL_LESSON):
-            if(lessonColors[lessonType].substr(0, 4) === "url(") {
-                styleAttrib += "background-image:" + lessonColors[lessonType] + ";cursor:pointer;";
+            if(JSON.stringify(lessonCfg.background.imageToggle) == 1) {
+                styleAttrib += "background-image:url(" + JSON.stringify(lessonCfg.background.backgroundData).substring(1).slice(0, -1) + ");";
                 styleAttrib += styleWhenImage;
             } else {
-                styleAttrib += "background-color:" + lessonColors[lessonType] + ";cursor:pointer;";
+                styleAttrib += "background-color:" + JSON.stringify(lessonCfg.background.backgroundData).substring(1).slice(0, -1) + ";";
             }
+            styleAttrib += 'color:' + JSON.stringify(lessonCfg.font.fontColor).substring(1).slice(0, -1) + ';';
             break;
+            
         case(LESSONTYPES.ACTIVE_LESSON):
             styleAttrib += "background-image:-webkit-linear-gradient(bottom, #0f0 " + percent + "%, " + lessonColors["OLDLESSON"] + " 0%);position:relative;padding:8px;"
             break;
