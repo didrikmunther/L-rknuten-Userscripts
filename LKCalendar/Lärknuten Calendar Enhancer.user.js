@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.4
+// @version      3.2.7
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -15,8 +15,6 @@
 /*jshint sub:true*/																			// Ignore W069 warning
 
 var loopInterval = 1000*1;																	// Set the loop interval
-
-var minuteAlarm = [5, 2, 1];
 
 var lessonColors = {}; 																	    // Set all the lessons' colors
 lessonColors["DEFAULT"] = 	"White";
@@ -51,26 +49,20 @@ function updateCfg() {
     cfg = JSON.parse(GM_getValue(cfgSavePath));
 }
 
-function saveLessonSettings(lessonSettings) {
-    var lessonName = lessonSettings.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
-    var settings = JSON.parse('{}');
+function saveCfg(config) {
+    GM_setValue(cfgSavePath, JSON.stringify(config));
+}
 
-    settings.background = JSON.parse('{}');
-    settings.background.backgroundData = lessonSettings.getElementsByClassName('backgroundData')[0].value;
-    settings.background.imageToggle = lessonSettings.getElementsByClassName('imageToggle')[0].checked == true ? 1 : 0;
-    settings.font = JSON.parse('{}');
-    settings.font.fontColor = lessonSettings.getElementsByClassName('fontColor')[0].value;
+function saveGlobalSettings(settingsElem) {
     
-    var gsettingsString = GM_getValue(cfgSavePath);
-    if(gsettingsString === undefined || gsettingsString === '') {
-        gsettingsString = '{}';
+    var minuteAlarm = '[' + settingsElem.getElementsByClassName('minuteAlarmInput')[0].value + ']';
+    if(IsJsonString(minuteAlarm)) {
+        cfg.global.minutes = JSON.parse(minuteAlarm);
+    } else {
+        alert('Not a valid JSON input!');
     }
-    var gsettings = JSON.parse(gsettingsString);
-    gsettings[lessonName] = settings;
-    GM_setValue(cfgSavePath, JSON.stringify(gsettings));
     
-    updateCfg();
-    
+    saveCfg(cfg);
 }
 
 function loadGlobalSettings(settingsElem) {
@@ -79,6 +71,22 @@ function loadGlobalSettings(settingsElem) {
         settings.setAttribute('style', 'z-index:2;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
         settings.setAttribute('class', 'lesson-setting');
         settings.innerHTML = '<u><h3 style="margin:0;">Global settings for Lärknuten Calendar Enhancer</h3></u><br>';
+        
+        var minuteAlarmInput = document.createElement('input');
+        minuteAlarmInput.setAttribute('class', 'minuteAlarmInput');
+        minuteAlarmInput.setAttribute('value', JSON.stringify(cfg.global.minutes).substring(1).slice(0, -1));
+        settings.innerHTML += 'Minutes until lesson to warn (separate by comma): ';
+        settings.appendChild(minuteAlarmInput);
+        settings.innerHTML += '<br><br>';
+        
+        var tutorialButton = document.createElement('button');
+        tutorialButton.innerHTML = 'Show tutorial';
+        tutorialButton.onclick = function() {
+            saveGlobalSettings(settings);
+            this.parentElement.remove();
+            intro();
+        }
+        settings.appendChild(tutorialButton);
         
         var backupButton = document.createElement('button');
         backupButton.innerHTML = 'Backup settings';
@@ -93,20 +101,21 @@ function loadGlobalSettings(settingsElem) {
             var backup = prompt('Put the backed up string in the box below.');
             if(IsJsonString(backup) && backup != null) {
                 cfg = JSON.parse(backup);
-                GM_setValue(cfgSavePath, JSON.stringify(cfg));
+                saveCfg(cfg);
             } else {
                 alert('Not a valid json string!');
             }
         }
         settings.appendChild(loadBackupButton);
         
+        var spacer = document.createElement('br');
+        settings.appendChild(spacer);
+        
         var clearCacheButton = document.createElement('button');
         clearCacheButton.setAttribute('style', 'color:red;');
         clearCacheButton.innerHTML = 'Clear settings';
         clearCacheButton.onclick = function() {
             if(confirm('Are you really, really, really sure?')) {
-                //cfg = JSON.parse('{}');
-                //GM_setValue(cfgSavePath, JSON.stringify(cfg));
                 GM_deleteValue(cfgSavePath);
                 location.reload();
             }
@@ -127,16 +136,38 @@ function loadGlobalSettings(settingsElem) {
         settings.appendChild(aboutButton);
         
         var saveButton = document.createElement('button');
-        saveButton.innerHTML = 'Close';
+        saveButton.innerHTML = 'Save';
         saveButton.setAttribute('style', 'float:right;clear:both;margin-top:20px;');
         saveButton.onclick = function() {
-            
+            saveGlobalSettings(settings);
             this.parentElement.remove();
         }
         settings.appendChild(saveButton);
         
         settingsElem.parentElement.insertBefore(settings, settingsElem.parentElement.childNodes[1]);
     }
+}
+
+function saveLessonSettings(lessonSettings) {
+    var lessonName = lessonSettings.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
+    var settings = JSON.parse('{}');
+
+    settings.background = JSON.parse('{}');
+    settings.background.backgroundData = lessonSettings.getElementsByClassName('backgroundData')[0].value;
+    settings.background.imageToggle = lessonSettings.getElementsByClassName('imageToggle')[0].checked == true ? 1 : 0;
+    settings.font = JSON.parse('{}');
+    settings.font.fontColor = lessonSettings.getElementsByClassName('fontColor')[0].value;
+    
+    var gsettingsString = GM_getValue(cfgSavePath);
+    if(gsettingsString === undefined || gsettingsString === '') {
+        gsettingsString = '{}';
+    }
+    var gsettings = JSON.parse(gsettingsString);
+    gsettings[lessonName] = settings;
+    saveCfg(gsettings);
+    
+    updateCfg();
+    
 }
 
 function loadLessonSettings(settingsElem) {
@@ -205,6 +236,60 @@ function loadLessonSettings(settingsElem) {
     }
 }
 
+function intro() {
+    var target1 = document.getElementsByClassName('table-view')[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[0].getElementsByClassName('settingsElem')[0];
+    
+    var targetElem1 = document.createElement('div');
+    targetElem1.setAttribute('style', 'color:red;border:5px solid green;padding:5px;z-index:5;background-color:blue;position:absolute;margin-top:-15px;margin-left:80px;width:100px;height:50px;');
+    var targetElem1Para = document.createElement('p');
+    targetElem1Para.innerHTML = 'This is the global options button!';
+    var targetElem1Arrow = document.createElement('div');
+    targetElem1Arrow.setAttribute('style', 'float:left;z-index:7;position:absolute;top:0px;left:-30px;border-top: 30px solid transparent;border-bottom: 30px solid transparent;border-right:30px solid blue;');
+    targetElem1.appendChild(targetElem1Para);
+    targetElem1.appendChild(targetElem1Arrow);
+    targetElem1.onclick = function() {
+        var target2 = document.querySelectorAll('.cal-day-item, .cal-day-item-inside')[0];
+        
+        var targetElem2 = document.createElement('div');
+        targetElem2.setAttribute('style', 'color:red;border:5px solid green;padding:5px;z-index:5;background-color:blue;position:absolute;margin-top:-15px;margin-left:60px;width:100px;height:50px;');
+        var targetElem2Para = document.createElement('p');
+        targetElem2Para.innerHTML = 'This is a settings button for a lesson!';
+        var targetElem2Arrow = document.createElement('div');
+        targetElem2Arrow.setAttribute('style', 'float:left;z-index:7;position:absolute;top:0px;left:-30px;border-top: 30px solid transparent;border-bottom: 30px solid transparent;border-right:30px solid blue;');
+        targetElem2.appendChild(targetElem2Para);
+        targetElem2.appendChild(targetElem2Arrow);
+        targetElem2.onclick = function() {
+            this.remove();
+        }
+        
+        target2.insertBefore(targetElem2, target2.childNodes[0]);
+        
+        this.remove();
+    }
+    
+    target1.parentElement.appendChild(targetElem1);
+    
+    cfg.global.introShown = JSON.parse('true');
+    saveCfg(cfg);
+    
+}
+
+function defaultGlobalSettings() {
+    if(cfg.global === undefined) {
+        cfg.global = JSON.parse('{}');
+    }
+    
+    if(cfg.global.minutes === undefined || Object.prototype.toString.call(cfg.global.minutes) !== '[object Array]') {
+        cfg.global.minutes = JSON.parse('[1, 2, 5]');
+    }
+    
+    if(cfg.global.introShown === undefined) {
+        cfg.global.introShown = JSON.parse('false');
+    }
+    
+    saveCfg(cfg);
+}
+
 function init() {
     
     if(GM_getValue(cfgSavePath) === undefined) {
@@ -212,6 +297,8 @@ function init() {
     }
     
     cfg = JSON.parse(GM_getValue(cfgSavePath));
+    
+    defaultGlobalSettings();
     
     var calObjects = document.querySelectorAll('.cal-day-item, .cal-day-item-inside');
     
@@ -242,6 +329,7 @@ function init() {
     
     var th = document.getElementsByClassName('table-view')[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[0];
     var settingsElem = document.createElement('div');
+    settingsElem.setAttribute('class', 'settingsElem');
     settingsElem.setAttribute('style', 'opacity:0.3;width:38px;height:38px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
     settingsElem.onmouseover = function() {
         this.style.opacity = 1.0;
@@ -253,6 +341,10 @@ function init() {
         loadGlobalSettings(this);
     }
     th.appendChild(settingsElem);
+    
+    if(JSON.stringify(cfg.global.introShown) === 'false') {
+        intro();
+    }
 }
 
 function getTime(msec) {
@@ -364,11 +456,11 @@ function updateLoop() {																    // Main Loop
             timeLeftTime = getTime(-timeLeft - diff);									// Time until lesson starts
             timeUntilEnd = getTime(-timeLeft);											// Time until lesson ends
             if(timeLeftTime[0] === 0 &&
-               (minuteAlarm.indexOf(timeLeftTime[1] + 1)) >= 0 &&
+               (cfg.global.minutes.indexOf(timeLeftTime[1] + 1)) >= 0 &&
                (calObjects[i].getElementsByClassName("isAlerted")[0].id) !== "alerted" + timeLeftTime[1]) {
                 alert(timeLeftTime[1] + 1 + " Minute Varning");
                 calObjects[i].getElementsByClassName("isAlerted")[0].id = "alerted" + timeLeftTime[1];
-            }
+        }
             lectionActive += "<font size=\"1\"><i> Om " + timeLeftTime[0] + "h, " + timeLeftTime[1] + "m " + timeLeftTime[2] + "s <span style=\"opacity: 0.5\">- " + timeUntilEnd[0] + "h, " + timeUntilEnd[1] + "m " + timeUntilEnd[2] + "s </span></i></font>"; // Display the time until lesson start
         }
 
