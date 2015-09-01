@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.2
+// @version      3.2.3
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -9,6 +9,7 @@
 // @match        https://katrineholm.pingpong.se/*
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
 // ==/UserScript==
 
 /*jshint sub:true*/																			// Ignore W069 warning
@@ -104,8 +105,9 @@ function loadGlobalSettings(settingsElem) {
         clearCacheButton.innerHTML = 'Clear settings';
         clearCacheButton.onclick = function() {
             if(confirm('Are you really, really, really sure?')) {
-                cfg = JSON.parse('{}');
-                GM_setValue(cfgSavePath, JSON.stringify(cfg));
+                //cfg = JSON.parse('{}');
+                //GM_setValue(cfgSavePath, JSON.stringify(cfg));
+                GM_deleteValue(cfgSavePath);
                 location.reload();
             }
         }
