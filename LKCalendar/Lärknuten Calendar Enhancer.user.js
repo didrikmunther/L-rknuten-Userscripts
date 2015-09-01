@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.7
+// @version      3.2.8
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -10,6 +10,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        GM_setClipboard
 // ==/UserScript==
 
 /*jshint sub:true*/																			// Ignore W069 warning
@@ -91,7 +92,8 @@ function loadGlobalSettings(settingsElem) {
         var backupButton = document.createElement('button');
         backupButton.innerHTML = 'Backup settings';
         backupButton.onclick = function() {
-            alert(JSON.stringify(cfg));
+            GM_setClipboard(JSON.stringify(cfg));
+            alert('Data copied to clipboard!');
         }
         settings.appendChild(backupButton);
         
