@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.1
+// @version      3.2.2
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -204,6 +204,10 @@ function loadLessonSettings(settingsElem) {
 }
 
 function init() {
+    
+    if(GM_getValue(cfgSavePath) === undefined) {
+        GM_setValue(cfgSavePath, '{}')
+    }
     
     cfg = JSON.parse(GM_getValue(cfgSavePath));
     
