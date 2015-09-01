@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.8
+// @version      3.2.9
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -320,6 +320,8 @@ function init() {
             loadLessonSettings(this);
         }
         
+        lesson.getElementsByClassName('schema-event-location-and-bookings')[0].onclick = lesson.onclick;
+        lesson.getElementsByClassName('schema-event-location-and-bookings')[0].setAttribute('style', 'cursor:pointer;');
         lesson.onclick = undefined;
         lesson.style.cursor = 'none';
         lesson.insertBefore(tempElem, lesson.firstChild);
