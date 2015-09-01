@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.2.3
+// @version      3.2.4
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -143,7 +143,7 @@ function loadLessonSettings(settingsElem) {
     if(settingsElem.parentElement.getElementsByClassName('lesson-setting').length === 0) {
         var lessonName = settingsElem.parentElement.getElementsByClassName('schema-event-title')[0].firstChild.innerHTML.substr(28,3);
         var lessonSettings = document.createElement('div');
-        lessonSettings.setAttribute('style', 'z-index:1;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
+        lessonSettings.setAttribute('style', 'z-index:1;text-shadow:none;color:black;background-color:#f0f0f0;position:absolute;padding:5px;border:1px solid #aaa;');
         lessonSettings.setAttribute('class', 'lesson-setting');
 
         lessonSettings.innerHTML = '<u><h3 style="margin:0;">Settings for ' + lessonName + '</h3></u><br>';
