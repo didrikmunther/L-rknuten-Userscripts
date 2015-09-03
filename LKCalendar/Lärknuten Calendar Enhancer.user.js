@@ -17,10 +17,6 @@
 
 var loopInterval = 1000*1;																	// Set the loop interval
 
-var lessonColors = {}; 																	    // Set all the lessons' colors
-lessonColors["DEFAULT"] = 	"White";
-lessonColors["OLDLESSON"] = "lightgray";
-
 var styleWhenImage = 'color:white;background-size:100% 100%;background-repeat:no-repeat;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;'
 
 var LESSONTYPES = {
@@ -122,6 +118,7 @@ function loadGlobalSettings(settingsElem) {
         backupButton.onclick = function() {
             GM_setClipboard(JSON.stringify(cfg));
             alert('Data copied to clipboard!');
+            this.parentElement.remove();
         }
         settings.appendChild(backupButton);
         
@@ -231,7 +228,7 @@ function loadLessonSettings(settingsElem) {
         imageToggle.setAttribute('class', 'imageToggle');
         imageToggle.setAttribute('type', 'checkbox');
         if(JSON.stringify(settings.background.imageToggle) == 1) {
-            imageToggle.setAttribute('checked', true);
+            imageToggle.setAttribute('checked', true); // Must do it this way, as soon as you touch the checked attr it gets checked
         }
         lessonSettings.innerHTML += 'Background: ';
         lessonSettings.appendChild(backgroundData);
@@ -273,7 +270,7 @@ function intro() {
     var targetElem2 = document.createElement('div');
     targetElem2.setAttribute('style', 'color:red;border:5px solid green;padding:5px;z-index:5;background-color:blue;position:absolute;margin-top:-15px;margin-left:60px;width:100px;height:50px;');
     var targetElem2Para = document.createElement('p');
-    targetElem2Para.innerHTML = 'This is a settings button for a lesson!';
+    targetElem2Para.innerHTML = 'This is a settings button for a lesson! (Click me)';
     var targetElem2Arrow = document.createElement('div');
     targetElem2Arrow.setAttribute('style', 'float:left;z-index:7;position:absolute;top:0px;left:-30px;border-top: 30px solid transparent;border-bottom: 30px solid transparent;border-right:30px solid blue;');
     targetElem2.appendChild(targetElem2Para);
@@ -285,7 +282,7 @@ function intro() {
     var targetElem1 = document.createElement('div');
     targetElem1.setAttribute('style', 'color:red;border:5px solid green;padding:5px;z-index:5;background-color:blue;position:absolute;margin-top:-15px;margin-left:80px;width:100px;height:50px;');
     var targetElem1Para = document.createElement('p');
-    targetElem1Para.innerHTML = 'This is the global options button!';
+    targetElem1Para.innerHTML = 'This is the global options button! (Click me)';
     var targetElem1Arrow = document.createElement('div');
     targetElem1Arrow.setAttribute('style', 'float:left;z-index:7;position:absolute;top:0px;left:-30px;border-top: 30px solid transparent;border-bottom: 30px solid transparent;border-right:30px solid blue;');
     targetElem1.appendChild(targetElem1Para);
@@ -413,7 +410,7 @@ function colorLessons(lesson, flag, percent) {
     
     var styleAttrib = "";
     
-    // Remember this one: .substring(1).slice(0, -1)
+    // Remember this one: .substring(1).slice(0, -1) removes the quote from stringified json
     
     switch(flag) {
         case(LESSONTYPES.NORMAL_LESSON):
