@@ -73,7 +73,14 @@ function saveGlobalSettings(settingsElem) {
         alert('Not a valid JSON input! (activeLessonColor)');
     }
     
+    var beforeGoebbels = cfg.global.showGoebbels;
+    cfg.global.showGoebbels = settingsElem.getElementsByClassName('showGoebbelsInput')[0].checked == true ? 1 : 0;
+    
     saveCfg(cfg);
+    
+    if(beforeGoebbels !== cfg.global.showGoebbels) {
+        location.reload();
+    }
 }
 
 function loadGlobalSettings(settingsElem) {
@@ -102,6 +109,16 @@ function loadGlobalSettings(settingsElem) {
         activeLessonColorInput.setAttribute('value', JSON.stringify(cfg.global.activeLessonColor).substring(1).slice(0, -1));
         settings.innerHTML += 'Color for active lessons: '
         settings.appendChild(activeLessonColorInput);
+        settings.innerHTML += '<br>';
+        
+        var showGoebbelsInput = document.createElement('input');
+        showGoebbelsInput.setAttribute('class', 'showGoebbelsInput');
+        showGoebbelsInput.setAttribute('type', 'checkbox');
+        if(JSON.stringify(cfg.global.showGoebbels) == 1) {
+            showGoebbelsInput.setAttribute('checked', true); // Must do it this way, as soon as you touch the checked attr it gets checked
+        }
+        settings.innerHTML += 'Exchange lärknuten logo to funny images: '
+        settings.appendChild(showGoebbelsInput);
         settings.innerHTML += '<br><br>';
         
         var tutorialButton = document.createElement('button');
@@ -224,6 +241,7 @@ function loadLessonSettings(settingsElem) {
         backgroundData.setAttribute('class', 'backgroundData');
         backgroundData.setAttribute('style', 'width:100px;height:20px;');
         backgroundData.setAttribute('value', JSON.stringify(settings.background.backgroundData).substring(1).slice(0, -1));
+        
         var imageToggle = document.createElement('input');
         imageToggle.setAttribute('class', 'imageToggle');
         imageToggle.setAttribute('type', 'checkbox');
@@ -320,6 +338,10 @@ function defaultGlobalSettings() {
         cfg.global.activeLessonColor = JSON.parse('"#0f0"');
     }
     
+    if(cfg.global.showGoebbels === undefined) {
+        cfg.global.showGoebbels = JSON.parse('true');
+    }
+    
     saveCfg(cfg);
 }
 
@@ -362,23 +384,36 @@ function init() {
         
     }
     
-    var th = document.getElementsByClassName('table-view')[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[0];
-    var settingsElem = document.createElement('div');
-    settingsElem.setAttribute('class', 'settingsElem');
-    settingsElem.setAttribute('style', 'opacity:0.3;width:38px;height:38px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
-    settingsElem.onmouseover = function() {
-        this.style.opacity = 1.0;
+    try {
+        var th = document.getElementsByClassName('table-view')[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[0];
+        var settingsElem = document.createElement('div');
+        settingsElem.setAttribute('class', 'settingsElem');
+        settingsElem.setAttribute('style', 'opacity:0.3;width:38px;height:38px;background-size:100% 100%;background-image:url(\'https://i.imgur.com/qhPpqRZ.png\');position:absolute;');
+        settingsElem.onmouseover = function() {
+            this.style.opacity = 1.0;
+        }
+        settingsElem.onmouseout = function() {
+            this.style.opacity = 0.3;
+        }
+        settingsElem.onclick = function() {
+            loadGlobalSettings(this);
+        }
+        th.appendChild(settingsElem);
+    } catch(e) {
+        
     }
-    settingsElem.onmouseout = function() {
-        this.style.opacity = 0.3;
-    }
-    settingsElem.onclick = function() {
-        loadGlobalSettings(this);
-    }
-    th.appendChild(settingsElem);
     
     if(JSON.stringify(cfg.global.introShown) === 'false') {
         intro();
+    }
+    
+    if(cfg.global.showGoebbels == 1) {
+        var images = ['https://upload.wikimedia.org/wikipedia/commons/6/67/Bundesarchiv_Bild_102-17049,_Joseph_Goebbels_spricht.jpg',
+                      'http://www.doctormacro.com/Images/Chaplin,%20Charlie/Chaplin,%20Charlie%20(Circus,%20The)_01.jpg',
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Goran_Persson,_Sveriges_statsminister,_under_nordiskt_statsministermotet_i_Reykjavik_2005.jpg/225px-Goran_Persson,_Sveriges_statsminister,_under_nordiskt_statsministermotet_i_Reykjavik_2005.jpg'];
+        var image = images[Math.floor((Math.random() * images.length))];
+        var imageElem = document.getElementById('logotype');
+        imageElem.setAttribute('src', image);
     }
 }
 
@@ -483,8 +518,9 @@ function updateLoop() {																    // Main Loop
         else if(today > lectionDate1 && today < lectionDate2) { 						// #### If current date is colliding with lesson's date, then the lesson is active
             var timeLeft = lectionDate2 - today; 										// Get the time left of lesson
             timeLeftTime = getTime(timeLeft); 											// Convert time left of lesson to hours, minutes and seconds
-            lectionActive += "<b>" + timeLeftTime[0] + "h, " + timeLeftTime[1] + "m " + timeLeftTime[2] + "s kvar </b>"; // Display time left of lesson
-            colorLessons(calObjects[i], LESSONTYPES.ACTIVE_LESSON, 100 - ((today - lectionDate1) / (lectionDate2 - lectionDate1) * 100));	// Color the active lesson
+            var percentage = 100 - ((today - lectionDate1) / (lectionDate2 - lectionDate1) * 100);
+            lectionActive += "<b>" + timeLeftTime[0] + "h, " + timeLeftTime[1] + "m " + timeLeftTime[2] + "s (" + percentage.toPrecision(3) + "%) kvar </b>"; // Display time left of lesson
+            colorLessons(calObjects[i], LESSONTYPES.ACTIVE_LESSON, percentage);	// Color the active lesson
         }
         else {																			// #### Else the lesson is coming up
             var timeLeft = today - lectionDate2;
