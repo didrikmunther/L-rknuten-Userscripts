@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Food Viewer
 // @namespace    http://github.com/Malaxiz
-// @version      2.1
-// @updateURL    https://cdn.rawgit.com/Malaxiz/L-rknuten-Userscripts/master/LKFood/L%C3%A4rknuten%20Food%20Viewer.user.js
+// @version      2.2
 // @description  Gets the food of the week and displays it on the scheme of Lärknuten
 // @icon 		 https://i.imgur.com/0qsedYm.png
 // @author       Didrik Munther KTC-TE14
