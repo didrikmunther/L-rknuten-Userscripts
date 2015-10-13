@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.3.1
+// @version      3.3.2
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -48,6 +48,11 @@ function updateCfg() {
 
 function saveCfg(config) {
     GM_setValue(cfgSavePath, JSON.stringify(config));
+}
+
+function defaultSettings() {
+    cfg = JSON.parse('{"PRR":{"background":{"backgroundData":"#ee0","imageToggle":0},"font":{"fontColor":"black"}},"DEU":{"background":{"backgroundData":"Lavender","imageToggle":0},"font":{"fontColor":"black"}},"WEB":{"background":{"backgroundData":"white","imageToggle":0},"font":{"fontColor":"black"}},"MAT":{"background":{"backgroundData":"#fa0","imageToggle":0},"font":{"fontColor":"black"}},"FYS":{"background":{"backgroundData":"#788","imageToggle":0},"font":{"fontColor":"black"}},"IDH":{"background":{"backgroundData":"lightgreen","imageToggle":0},"font":{"fontColor":"black"}},"ENG":{"background":{"backgroundData":"lightblue","imageToggle":0},"font":{"fontColor":"black"}},"Men":{"background":{"backgroundData":"#f55","imageToggle":0},"font":{"fontColor":"black"}},"SVE":{"background":{"backgroundData":"pink","imageToggle":0},"font":{"fontColor":"black"}},"För":{"background":{"backgroundData":"black","imageToggle":0},"font":{"fontColor":"red"}},"global":{"minutes":[1,2,5],"introShown":true,"oldLessonColor":"lightgray","activeLessonColor":"#0f0","showGoebbels":0},"Ant":{"background":{"backgroundData":"white","imageToggle":0},"font":{"fontColor":"black"}},"KTC":{"background":{"backgroundData":"white","imageToggle":0},"font":{"fontColor":"black"}}}');
+    saveCfg(cfg);
 }
 
 function saveGlobalSettings(settingsElem) {
@@ -161,6 +166,9 @@ function loadGlobalSettings(settingsElem) {
         clearCacheButton.onclick = function() {
             if(confirm('Are you really, really, really sure?')) {
                 GM_deleteValue(cfgSavePath);
+                cfg = JSON.parse('{}');
+                cfg.global = JSON.parse('{}');
+                saveCfg(cfg);
                 location.reload();
             }
         }
@@ -178,6 +186,16 @@ function loadGlobalSettings(settingsElem) {
             settings.appendChild(aboutPage);
         }
         settings.appendChild(aboutButton);
+        
+        var defaultSettingsButton = document.createElement('button');
+        defaultSettingsButton.innerHTML = 'Load default settings';
+        defaultSettingsButton.onclick = function() {
+            if(confirm('Are you sure you want to overwrite your config with the default one?')) {
+                defaultSettings();
+                this.parentElement.remove();
+            }
+        }
+        settings.appendChild(defaultSettingsButton);
         
         var saveButton = document.createElement('button');
         saveButton.innerHTML = 'Save and close';
@@ -320,6 +338,7 @@ function intro() {
 function defaultGlobalSettings() {
     if(cfg.global === undefined) {
         cfg.global = JSON.parse('{}');
+        defaultSettings();
     }
     
     if(cfg.global.minutes === undefined || Object.prototype.toString.call(cfg.global.minutes) !== '[object Array]') {
