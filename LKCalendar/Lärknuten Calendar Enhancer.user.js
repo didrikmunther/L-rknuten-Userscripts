@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten Calendar Enhancer
 // @namespace    http://github.com/Malaxiz
-// @version      3.5
+// @version      4.20
 // @updateURL    https://github.com/Malaxiz/L-rknuten-Userscripts/raw/master/LKCalendar/L%C3%A4rknuten%20Calendar%20Enhancer.user.js
 // @description  Enhances the calendar
 // @icon		 https://i.imgur.com/Xa4Svs9.png
@@ -15,9 +15,26 @@
 
 /*jshint sub:true*/																			// Ignore W069 warning
 
-// remove this if you are boring:
-document.getElementsByTagName("body")[0].style.transform = "rotate(180deg)";
-// =============================
+body = document.getElementsByTagName("body")[0]
+body.style.transform = "rotate(0deg)"
+
+uwot = true
+
+function test() {    
+    rotate = parseInt(body.style.transform.substr(7).substr(0, body.style.transform.length - 7 - 4))
+    rotate += 1
+    if(rotate >= 360) {
+        rotate = 0
+    }
+    
+    body.style.transform = "rotate(" + rotate + "deg)"
+}
+el = document.createElement("div")
+el.setAttribute("style", "position:absolute;z-index:9999;width:100%;height:100%;background-color:rgb(255, 0, 255);opacity:0.5;")
+if(uwot) {
+    body.insertBefore(el, body.childNodes[0]);
+    setInterval(test, 1)
+}
 
 var loopInterval = 1000*1;																	// Set the loop interval
 
