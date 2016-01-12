@@ -23,15 +23,15 @@ for(var i = 0; i < document.getElementsByClassName("parent").length; i++) {
 }
 
 var buttonContainer = document.createElement("div");
-buttonContainer.setAttribute("style","position:fixed;top:0;left:0;z-index:999;width:100%;height:23px;");
+buttonContainer.setAttribute("style","position:fixed;top:0;left:0;z-index:999;width:100%;height:23px;pointer-events:none;");
 
 var buttonUp = document.createElement("button");
-buttonUp.setAttribute("style","width:50px;height:50px;float:right;clear:both;margin-right:5px;margin-top:5px;background-color:gray;outline:0;");
+buttonUp.setAttribute("style","width:50px;height:50px;float:right;clear:both;margin-right:5px;margin-top:5px;background-color:gray;outline:0;pointer-events:auto;");
 buttonUp.setAttribute("id","buttonup");
 buttonContainer.appendChild(buttonUp);
 
 var buttonDown = document.createElement("button");
-buttonDown.setAttribute("style","width:50px;height:50px;float:right;clear:both;margin-right:5px;margin-top:5px;background-color:gray;outline:0;");
+buttonDown.setAttribute("style","width:50px;height:50px;float:right;clear:both;margin-right:5px;margin-top:5px;background-color:gray;outline:0;pointer-events:auto;");
 buttonDown.setAttribute("id","buttondown");
 buttonContainer.appendChild(buttonDown);
 
