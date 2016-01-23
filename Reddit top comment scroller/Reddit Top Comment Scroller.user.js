@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Reddit Top Comment Scroller
 // @namespace    http://github.com/Malaxiz
-// @version      0.2
+// @version      0.3
 // @description  Allows you to scroll through reddit fast
 // @author       Didrik Munther
-// @match        https://www.reddit.com/*
+// @match        https://www.reddit.com/r/*/comments/*
 // @grant        none
 // ==/UserScript==
 
