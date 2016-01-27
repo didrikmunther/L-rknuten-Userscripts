@@ -18,7 +18,7 @@
 body = document.getElementsByTagName("body")[0]
 body.style.transform = "rotate(0deg)"
 
-uwot = true
+uwot = false
 
 function test() {    
     rotate = parseInt(body.style.transform.substr(7).substr(0, body.style.transform.length - 7 - 4))
