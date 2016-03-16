@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lärknuten week displayer
 // @namespace    http://github.com/Malaxiz
-// @version      0.1
+// @version      0.2
 // @description  Gets the week and displays it in the header of Lärknuten
 // @author       Didrik Munther KTC-TE14
 // @match        https://katrineholm.pingpong.se/*
