@@ -1,5 +1,8 @@
 # Lärknuten-Userscripts
 
+Example for how it looks:
+![](https://i.imgur.com/F9gn1Tr.png)
+
 -- LKCalender --
 This script lets the user color the different lessons on lärknuten, as well as alarming the user when a lesson is about to begin.
 It uses json to store user settings for the different lessons.
