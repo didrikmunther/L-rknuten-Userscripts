@@ -1,6 +1,6 @@
 # Lärknuten-Userscripts
 
-Example for how it looks:
+Example of how it looks:
 ![](https://i.imgur.com/F9gn1Tr.png)
 
 -- LKCalender --
