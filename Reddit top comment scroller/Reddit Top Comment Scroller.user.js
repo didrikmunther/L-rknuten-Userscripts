@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Reddit Top Comment Scroller
 // @namespace    http://github.com/Malaxiz
-// @version      0.3
+// @version      0.3.5
 // @description  Allows you to scroll through reddit fast
 // @author       Didrik Munther
-// @match        https://www.reddit.com/r/*/comments/*
+// @match        *://*.reddit.com/r/*/comments/*
 // @grant        none
 // ==/UserScript==
 
@@ -12,13 +12,14 @@ var margin = 15;
 
 var topComments = [];
 
-for(var i = 0; i < document.getElementsByClassName("parent").length; i++) {
-    var parent = document.getElementsByClassName("parent")[i].parentNode;
-    for(var j = 0; j < 5; j++) {
+var parents = document.getElementsByClassName("parent");
+for(var i = 0; i < parents.length; i++) {
+    var parent = parents[i].parentNode;
+    for(var j = 0; j < 6; j++) {
         parent = parent.parentNode;
     }
     if(parent.tagName == "HTML") {
-        topComments.push(document.getElementsByClassName("parent")[i]);
+        topComments.push(parents[i]);
     }
 }
 
