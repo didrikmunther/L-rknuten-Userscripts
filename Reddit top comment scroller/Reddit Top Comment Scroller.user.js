@@ -15,7 +15,7 @@ var topComments = [];
 var parents = document.getElementsByClassName("parent");
 for(var i = 0; i < parents.length; i++) {
     var parent = parents[i].parentNode;
-    for(var j = 0; j < 6; j++) {
+    for(var j = 0; j < 5; j++) {
         parent = parent.parentNode;
     }
     if(parent.tagName == "HTML") {
